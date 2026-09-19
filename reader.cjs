@@ -91,13 +91,47 @@ function fmt(raw, decimals) {
   return frac ? `${whole}.${frac}` : whole;
 }
 
+/**
+ * Ask the endpoint which chain it actually is, rather than trusting the URL.
+ * A rail is a claim until something answers eth_chainId.
+ */
+async function chainIdOf(url) {
+  return Number(BigInt(await rpc(url, 'eth_chainId', [])));
+}
+
 /** Read one address at a pinned block height. */
 async function readAddress(address, opts = {}) {
   const { rpc: url = DEFAULTS.rpc, asset = DEFAULTS.asset,
-          decimals = DEFAULTS.decimals, block = 'latest' } = opts;
+          decimals = DEFAULTS.decimals, block = 'latest',
+          claimedRail = null, chainId = null } = opts;
 
   if (!/^0x[0-9a-fA-F]{40}$/.test(address)) {
     throw new Error(`not an address: ${address}`);
+  }
+
+  // Rail coverage. Every EVM chain shares one address format, so a cross-chain
+  // read SUCCEEDS and looks like a reading: query a door's Polygon payTo
+  // against Base's USDC contract and you get a well-formed PAID about a rail
+  // nobody checked. No format validator catches a well-formed wrong value.
+  // A rail is read ONLY by a run that covers it.
+  const observedChain = chainId !== null ? chainId : await chainIdOf(url);
+  if (claimedRail !== null) {
+    const want = typeof claimedRail === 'string'
+      ? Number(claimedRail.replace(/^eip155:/, ''))
+      : claimedRail;
+    if (!Number.isFinite(want)) {
+      return { address, verdict: UNKNOWN, claimed_rail: claimedRail,
+        observed_chain_id: observedChain, rail_covered: false,
+        because: `claimed rail "${claimedRail}" is not an eip155 chain this run can cover`,
+        instrument_failure: false };
+    }
+    if (want !== observedChain) {
+      return { address, verdict: UNKNOWN, claimed_rail: claimedRail,
+        observed_chain_id: observedChain, rail_covered: false,
+        because: `door claims eip155:${want}; this run covers eip155:${observedChain}. ` +
+                 'Reading it here would relabel one rail as another, so it is not read.',
+        instrument_failure: false };
+    }
   }
 
   const [balHex, nonceHex, code] = await Promise.all([
@@ -135,8 +169,14 @@ async function readAddress(address, opts = {}) {
     balance_raw: balance.toString(),
     balance: fmt(balance, decimals),
     nonce, is_contract: isContract,
-    block, asset, rail: url,
-    rpc_calls: 3,
+    block, asset,
+    // rail is the chain the endpoint ANSWERED as, not the URL we were handed.
+    rail: `eip155:${observedChain}`,
+    observed_chain_id: observedChain,
+    claimed_rail: claimedRail,
+    rail_covered: claimedRail === null ? null : true,
+    endpoint: url,
+    rpc_calls: 4,
     residuals: verdict === ZERO_OBSERVED
       ? ['EIP-3009 relayed transfer does not move the holder nonce',
          'atomic receive-and-forward in one transaction is invisible to state reads']

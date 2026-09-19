@@ -75,6 +75,24 @@ async function main() {
   check('KA-07', h.balance_raw === h2.balance_raw,
     `same height read twice is identical (${h.balance})`);
 
+  // ---- KA-08 RAIL COVERAGE: a door claiming Polygon must NOT be read on Base.
+  // Sean's verdoc/quicknode trap: every EVM chain shares one address format, so
+  // a cross-chain read succeeds and looks like a reading. Must refuse, not report.
+  const cross = await readAddress(funded, {
+    rpc: BASE, asset: USDC, claimedRail: 'eip155:137' });
+  check('KA-08', cross.verdict === UNKNOWN && cross.rail_covered === false,
+    `door claiming eip155:137 read on Base -> ${cross.verdict}, rail_covered=${cross.rail_covered}`);
+
+  // ---- KA-09: a matching claimed rail is read normally and marked covered.
+  const match = await readAddress(funded, {
+    rpc: BASE, asset: USDC, claimedRail: 'eip155:8453' });
+  check('KA-09', match.verdict === PAID && match.rail_covered === true,
+    `matching rail -> ${match.verdict}, rail_covered=${match.rail_covered}`);
+
+  // ---- KA-10: rail is what the endpoint ANSWERED, never the URL we were given.
+  check('KA-10', match.rail === 'eip155:8453' && match.observed_chain_id === 8453,
+    `rail reported from eth_chainId: ${match.rail}`);
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 }
