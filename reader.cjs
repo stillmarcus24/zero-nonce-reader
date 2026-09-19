@@ -8,7 +8,7 @@
  * increments its nonce. So at nonce 0 the balance is monotonically
  * non-decreasing, and balanceOf at head is therefore the MAXIMUM the address
  * has ever held. A zero balance at nonce 0 is a zero balance at every block in
- * history — established by two eth_calls, with no indexer, no API key, no log
+ * history — established by four JSON-RPC calls, with no indexer, no API key, no log
  * range, and nothing that can be silently truncated.
  *
  * This matters because the usual instrument — paginated transfer logs from an

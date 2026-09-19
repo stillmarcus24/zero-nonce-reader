@@ -2,7 +2,7 @@
 
 Settle **"has this address ever been paid?"** from chain state alone — no indexer, no API key, no log range, nothing that can be silently truncated.
 
-Two `eth_call`s and a `getCode`. MIT, zero dependencies, Node 18+.
+Four JSON-RPC calls per address — `eth_chainId`, `balanceOf`, `eth_getTransactionCount`, `eth_getCode`. MIT, zero dependencies, Node 18+.
 
 ```bash
 node reader.cjs 0x480cd46e6fade651a0437deadda53d5c8e7d846a
@@ -22,7 +22,7 @@ The usual instrument for "never paid" is paginated transfer logs from an indexer
 
 This is not hypothetical. Three real instances from our own work:
 
-- A Blockscout v2 response names the token field `address_hash`, not `address`. Reading `address` returns `null` on every row, the token filter matches nothing, and **every address reports zero inbound**. It produced a confident *"27 of 27 x402 sellers have never been paid."* True reading: 8 of 13 had multi-payer revenue.
+- A Blockscout v2 response names the token field `address_hash`, not `address`. Reading `address` returns `null` on every row, the token filter matches nothing, and **every address reports zero inbound**. It produced a confident *"27 of 27 x402 sellers have never been paid."* True reading after that fix: 8 of 13 had multi-payer revenue — and **that number was itself understated**, because the same index pages at 50 and only page one was read. Pinned by slug at Base block 51316142: 14 doors publishing a payTo, **11 PAID, 3 ZERO_OBSERVED**. Two corrections, one instrument.
 - A page cap of 12 × 50 rows silently became a **count**: one address was published at 185 payers. Walking all 118 pages gives **2,360**.
 - A public RPC pruning logs at roughly 1.3 days returns an **empty array**, not an error, for any range older than the horizon.
 
@@ -53,16 +53,21 @@ If you need those closed, you need logs — and then you inherit every failure m
 
 `control()` reads a **known-funded** address before any run and refuses to proceed if it reports zero.
 
-A reader that reports zero for everything is indistinguishable from a broken one. Proving the instrument can see a non-zero is what makes the zeros mean anything. `selftest.cjs` carries two **discrimination cases** that require the suite to *fail* — a bogus asset address and an unreachable RPC must both raise rather than resolve to `ZERO_OBSERVED`. A corpus that cannot fail proves nothing.
+A reader that reports zero for everything is indistinguishable from a broken one. Proving the instrument can see a non-zero is what makes the zeros mean anything. `selftest.cjs` carries three **refusal cases** that require the suite to *fail* — a bogus asset address, an unreachable RPC, and a door whose advertised rail this run does not cover must each refuse rather than resolve to `ZERO_OBSERVED`. A corpus that cannot fail proves nothing.
 
 ```
-PASS  KA-01  control sees 5356912.154645 on a known-funded address
+PASS  KA-01  control sees 4519775.509719 on a known-funded address
 PASS  KA-02  untouched address -> ZERO_OBSERVED (nonce 0)
 PASS  KA-03  funded address -> PAID
 PASS  KA-04  contract -> is_contract=true, verdict=UNKNOWN
 PASS  KA-05  bogus asset raised instead of reporting a zero
 PASS  KA-06  unreachable RPC raises rather than returning a zero
-PASS  KA-07  same height read twice is identical
+PASS  KA-07  same height read twice is identical (598236.761437)
+PASS  KA-08  door claiming eip155:137 read on Base -> UNKNOWN, rail_covered=false
+PASS  KA-09  matching rail -> PAID, rail_covered=true
+PASS  KA-10  rail reported from eth_chainId: eip155:8453
+
+10 passed, 0 failed
 ```
 
 ## Any EVM chain, any ERC-20
