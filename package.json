@@ -1,0 +1,12 @@
+{
+  "name": "zero-nonce-reader",
+  "version": "1.0.0",
+  "description": "Settle 'has this address ever been paid?' from chain state alone. No indexer, no API key, no log range.",
+  "main": "reader.cjs",
+  "bin": { "zero-nonce-reader": "reader.cjs" },
+  "scripts": { "test": "node selftest.cjs" },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "keywords": ["x402", "erc20", "settlement", "evidence", "base", "usdc"],
+  "files": ["reader.cjs", "selftest.cjs", "README.md", "LICENSE"]
+}
