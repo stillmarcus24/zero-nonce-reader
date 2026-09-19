@@ -1,0 +1,145 @@
+{
+  "answered_by": "stillos",
+  "instrument": "zero-nonce-reader v1.1",
+  "key": "scvd.store second",
+  "pinned_block": 51520000,
+  "covered_rails": [
+    "eip155:8453"
+  ],
+  "doors": [
+    {
+      "door": "anyspend",
+      "verdict": "PAID",
+      "why": "at least one advertised rail shows an observed settlement; PAID is monotone",
+      "rails": [
+        {
+          "rail": "eip155:8453",
+          "payTo": "0x1e8e93cb91778e5b1a3639706789195a838960f8",
+          "verdict": "PAID",
+          "balance": "9",
+          "nonce": 23709,
+          "rail_covered": true,
+          "because": "holds a non-zero balance of the in-scope asset at this height"
+        }
+      ]
+    },
+    {
+      "door": "blockrun",
+      "verdict": "PAID",
+      "why": "at least one advertised rail shows an observed settlement; PAID is monotone",
+      "rails": [
+        {
+          "rail": "eip155:8453",
+          "payTo": "0x6e007731870ede419cfb31889cd5c4493cecb04c",
+          "verdict": "PAID",
+          "balance": "155.861",
+          "nonce": 0,
+          "rail_covered": true,
+          "because": "holds a non-zero balance of the in-scope asset at this height"
+        },
+        {
+          "rail": "eip155:8453",
+          "payTo": "0xe9030014f5dae217d0a152f02a043567b16c1abf",
+          "verdict": "PAID",
+          "balance": "6857.849111",
+          "nonce": 10,
+          "rail_covered": true,
+          "because": "holds a non-zero balance of the in-scope asset at this height"
+        }
+      ]
+    },
+    {
+      "door": "jsonguard",
+      "verdict": "PAID",
+      "why": "at least one advertised rail shows an observed settlement; PAID is monotone",
+      "rails": [
+        {
+          "rail": "eip155:8453",
+          "payTo": "0xa8b061d96f69426f11bcc807bfa00f0af79541a7",
+          "verdict": "PAID",
+          "balance": "1.377861",
+          "nonce": 10,
+          "rail_covered": true,
+          "because": "holds a non-zero balance of the in-scope asset at this height"
+        }
+      ]
+    },
+    {
+      "door": "quicknode",
+      "verdict": "PAID",
+      "why": "at least one advertised rail shows an observed settlement; PAID is monotone",
+      "rails": [
+        {
+          "rail": "eip155:137",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "eip155:1952",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "eip155:196",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "eip155:5042002",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "eip155:80002",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "eip155:8453",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "PAID",
+          "balance": "241.492",
+          "nonce": 1,
+          "rail_covered": true,
+          "because": "holds a non-zero balance of the in-scope asset at this height"
+        },
+        {
+          "rail": "eip155:84532",
+          "payTo": "0xf46394addda95a3d5bcc1124605e3d15d204623c",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "solana:5eykt4usfv8p8njdtrepy1vzqkqzkvdp",
+          "payTo": "2lwbc9mi6drurdehbttons4uddth1a4xwbdm1ekqct57",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        },
+        {
+          "rail": "solana:etwtrabzayq6imfeykouru166vu2xqa1",
+          "payTo": "2lwbc9mi6drurdehbttons4uddth1a4xwbdm1ekqct57",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        }
+      ]
+    },
+    {
+      "door": "verdoc",
+      "verdict": "UNKNOWN",
+      "why": "1 of 1 advertised rail(s) out of reach, so the door cannot be called empty",
+      "rails": [
+        {
+          "rail": "eip155:84532",
+          "payTo": "0x0a801e236fbc1a95a35ab8e946837320ddce9d69",
+          "verdict": "UNKNOWN",
+          "because": "rail not covered by any run we committed to; naming it rather than reading it on a chain that is not it"
+        }
+      ]
+    }
+  ]
+}
